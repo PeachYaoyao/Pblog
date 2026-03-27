@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.peachyao.mapper.AboutMapper">
+    <!--查询关于我设置-->
+    <select id="getAbout" resultType="top.peachyao.entity.About">
+        select * from about
+    </select>
+
+    <!--更新关于我设置-->
+    <update id="updateAbout">
+        update about set value=#{value} where name_en=#{nameEn}
+    </update>
+</mapper>

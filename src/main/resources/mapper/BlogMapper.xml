@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.peachyao.mapper.BlogMapper">
+    <!--查询所有文章的浏览量-->
+    <select id="getBlogViewsList" resultType="top.peachyao.model.dto.BlogViewDto">
+        select id,views from blog
+    </select>
+    <resultMap id="blog" type="top.peachyao.entity.Blog">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="firstPicture" column="first_picture"/>
+        <result property="content" column="content"/>
+        <result property="description" column="description"/>
+        <result property="published" column="is_published"/>
+        <result property="recommend" column="is_recommend"/>
+        <result property="appreciation" column="is_appreciation"/>
+        <result property="commentEnabled" column="is_comment_enabled"/>
+        <result property="top" column="is_top"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="views" column="views"/>
+        <result property="words" column="words"/>
+        <result property="readTime" column="read_time"/>
+        <result property="password" column="password"/>
+        <association property="user" javaType="top.peachyao.entity.User">
+            <id property="id" column="user_id"/>
+            <result property="username" column="username"/>
+            <result property="nickname" column="nickname"/>
+            <result property="avatar" column="avatar"/>
+            <result property="email" column="email"/>
+            <result property="createTime" column="user_create_time"/>
+            <result property="updateTime" column="user_update_time"/>
+            <result property="role" column="role"/>
+        </association>
+        <association property="category" javaType="top.peachyao.entity.Category">
+            <id property="id" column="category_id"/>
+            <result property="name" column="category_name"/>
+        </association>
+        <collection property="tags" javaType="top.peachyao.entity.Tag">
+            <id property="id" column="tag_id"/>
+            <result property="name" column="tag_name"/>
+            <result property="color" column="color"/>
+        </collection>
+    </resultMap>
+
+    <!--按id查询博客-->
+    <select id="getBlogById" resultMap="blog">
+        select b.id, b.title, b.first_picture, b.content, b.description, b.is_recommend, b.is_published, b.is_appreciation,
+        b.is_comment_enabled, b.is_top, b.create_time, b.update_time, b.views, b.words, b.read_time, b.password,
+        c.id as category_id, c.category_name,
+        bt.tag_id as tag_id, t.tag_name as tag_name, t.color
+        from (((blog as b left join category as c on b.category_id=c.id) left join blog_tag as bt on b.id=bt.blog_id) left join tag as t on bt.tag_id=t.id)
+        where b.id=#{id}
+    </select>
+
+    <resultMap id="blogVo" type="top.peachyao.model.vo.BlogInfoVo">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="createTime" column="create_time"/>
+        <result property="views" column="views"/>
+        <result property="words" column="words"/>
+        <result property="readTime" column="read_time"/>
+        <result property="top" column="is_top"/>
+        <result property="password" column="password"/>
+        <association property="category" javaType="top.peachyao.entity.Category">
+            <result property="name" column="category_name"/>
+        </association>
+    </resultMap>
+
+    <!--查询公开博客的简要信息-->
+    <select id="getBlogInfoListByIsPublished" resultMap="blogVo">
+        select b.id, b.title, b.description, b.is_top, b.create_time, b.views, b.words, b.read_time, b.password, c.category_name
+        from blog as b left join category as c on b.category_id=c.id
+        where b.is_published=true
+    </select>
+
+    <resultMap id="blogDetail" type="top.peachyao.model.vo.BlogDetailVo">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="appreciation" column="is_appreciation"/>
+        <result property="commentEnabled" column="is_comment_enabled"/>
+        <result property="top" column="is_top"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="views" column="views"/>
+        <result property="words" column="words"/>
+        <result property="readTime" column="read_time"/>
+        <result property="password" column="password"/>
+        <association property="category" javaType="top.peachyao.entity.Category">
+            <result property="name" column="category_name"/>
+        </association>
+        <collection property="tags" javaType="top.peachyao.entity.Tag">
+            <result property="name" column="tag_name"/>
+            <result property="color" column="color"/>
+        </collection>
+    </resultMap>
+
+    <!--按id查询公开博客-->
+    <select id="getBlogByIdAndIsPublished" resultMap="blogDetail">
+        select b.id, b.title, b.content, b.is_appreciation, b.is_comment_enabled, b.is_top,
+        b.create_time, b.update_time, b.views, b.words, b.read_time, b.password,
+        c.category_name,
+        t.tag_name as tag_name, t.color
+        from (((blog as b left join category as c on b.category_id=c.id) left join blog_tag as bt on b.id=bt.blog_id) left join tag as t on bt.tag_id=t.id)
+        where b.id=#{id} and b.is_published=true
+    </select>
+
+    <!--添加博客-->
+    <insert id="saveBlog" parameterType="top.peachyao.model.dto.BlogDto" useGeneratedKeys="true" keyProperty="id">
+        insert into blog (title, first_picture, content, description, is_published, is_recommend, is_appreciation, is_comment_enabled,
+        is_top, create_time, update_time, views, words, read_time, category_id, user_id, password)
+        values (#{title}, #{firstPicture}, #{content}, #{description}, #{published}, #{recommend}, #{appreciation}, #{commentEnabled},
+        #{top}, #{createTime}, #{updateTime}, #{views}, #{words}, #{readTime}, #{category.id}, #{user.id}, #{password})
+    </insert>
+
+    <!--维护 blog_tag 表(添加)-->
+    <insert id="saveBlogTag">
+        insert into blog_tag (blog_id, tag_id) values (#{blogId}, #{tagId})
+    </insert>
+
+    <!--更新博客-->
+    <update id="updateBlog">
+        update blog set title=#{title}, first_picture=#{firstPicture}, content=#{content}, description=#{description},
+        is_recommend=#{recommend}, is_published=#{published}, is_appreciation=#{appreciation}, is_comment_enabled=#{commentEnabled},
+        is_top=#{top}, create_time=#{createTime}, update_time=#{updateTime}, views=#{views},
+        words=#{words}, read_time=#{readTime}, category_id=#{category.id}, password=#{password}
+        where id=#{id}
+    </update>
+
+    <!--维护 blog_tag 表(删除)-->
+    <delete id="deleteBlogTagByBlogId">
+        delete from blog_tag where blog_id=#{blogId}
+    </delete>
+
+    <!--查询受密码保护文章密码-->
+    <select id="getBlogPassword" resultType="java.lang.String">
+        select password from blog where id=#{blogId}
+    </select>
+
+    <resultMap id="searchBlog" type="top.peachyao.model.vo.SearchBlogVo">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+    </resultMap>
+
+    <!--按关键字根据文章内容搜索公开且无密码保护的博客文章-->
+    <select id="getSearchBlogListByQueryAndIsPublished" resultMap="searchBlog">
+        <bind name="queryPattern" value="'%' + query + '%'"/>
+        select id, title, content
+        from blog
+        where is_published=true and password='' and content like #{queryPattern}
+    </select>
+
+    <!--按标题和分类查询博客List-->
+    <select id="getListByTitleAndCategoryId" resultMap="blog">
+        <bind name="titlePattern" value="'%' + title + '%'"/>
+        select b.id, b.title, b.first_picture, b.create_time, b.update_time, b.is_published, b.is_recommend, b.is_appreciation,
+        b.is_comment_enabled, b.is_top, b.password,
+        c.id as category_id, c.category_name
+        from blog as b left join category as c on b.category_id=c.id
+        <where>
+            <if test="title!=null and title!=''">
+                b.title like #{titlePattern}
+            </if>
+            <if test="categoryId!=null">
+                and b.category_id=#{categoryId}
+            </if>
+        </where>
+    </select>
+
+    <!--按id删除博客-->
+    <delete id="deleteBlogById">
+        delete from blog where id=#{id}
+    </delete>
+
+    <!--更新博客置顶状态-->
+    <update id="updateBlogTopById">
+        update blog set is_top=#{top} where id=#{blogId}
+    </update>
+
+    <!--更新博客推荐状态-->
+    <update id="updateBlogRecommendById">
+        update blog set is_recommend=#{recommend} where id=#{blogId}
+    </update>
+
+    <!--更新博客可见性状态-->
+    <update id="updateBlogVisibilityById">
+        update blog set is_appreciation=#{bv.appreciation}, is_recommend=#{bv.recommend}, is_comment_enabled=#{bv.commentEnabled},
+        is_top=#{bv.top}, is_published=#{bv.published}, password=#{bv.password}
+        where id=#{blogId}
+    </update>
+</mapper>
