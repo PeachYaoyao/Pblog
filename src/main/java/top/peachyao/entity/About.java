@@ -7,6 +7,7 @@ import lombok.*;
  * @Author: PeachYao
  * @Date: 2026-03-26
  */
+@NoArgsConstructor
 @Data
 public class About {
 	private Long id;

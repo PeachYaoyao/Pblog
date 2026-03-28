@@ -1,6 +1,7 @@
 package top.peachyao.model.vo;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import top.peachyao.entity.Category;
 import top.peachyao.entity.Tag;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * @Author: PeachYao
  * @Date: 2026-03-27
  */
+@NoArgsConstructor
 @Data
 public class BlogDetailVo {
     private Long id;

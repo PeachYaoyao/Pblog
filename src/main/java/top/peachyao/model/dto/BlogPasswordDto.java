@@ -2,12 +2,14 @@ package top.peachyao.model.dto;
 
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @Description: 受保护文章密码DTO
  * @Author: PeachYao
  * @Date: 2026-03-27
  */
+@NoArgsConstructor
 @Data
 public class BlogPasswordDto {
     private Long blogId;

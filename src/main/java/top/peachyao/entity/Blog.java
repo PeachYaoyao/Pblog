@@ -11,6 +11,7 @@ import java.util.List;
  * @Author: PeachYao
  * @Date: 2026-03-26
  */
+@NoArgsConstructor
 @Data
 public class Blog {
 	private Long id;

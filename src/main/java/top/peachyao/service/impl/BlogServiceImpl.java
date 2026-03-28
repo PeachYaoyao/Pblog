@@ -22,10 +22,7 @@ import top.peachyao.mapper.BlogMapper;
 import top.peachyao.model.dto.BlogDto;
 import top.peachyao.model.dto.BlogViewDto;
 import top.peachyao.model.dto.BlogVisibilityDto;
-import top.peachyao.model.vo.BlogDetailVo;
-import top.peachyao.model.vo.BlogInfoVo;
-import top.peachyao.model.vo.PageResult;
-import top.peachyao.model.vo.SearchBlogVo;
+import top.peachyao.model.vo.*;
 import top.peachyao.service.BlogService;
 import top.peachyao.service.CategoryService;
 import top.peachyao.service.RedisService;
@@ -145,6 +142,55 @@ public class BlogServiceImpl implements BlogService {
         setBlogViewsFromRedisToPageResult(pageResult);
         redisService.saveKVToHash(redisKey, pageNum, pageResult);
         return pageResult;
+    }
+
+    @Override
+    public PageResult<BlogInfoVo> getBlogInfoListByCategoryNameAndIsPublished(String categoryName, Integer pageNum) {
+        PageHelper.startPage(pageNum, pageSize, orderBy);
+        List<BlogInfoVo> blogInfos = processBlogInfosPassword(blogMapper.getBlogInfoListByCategoryNameAndIsPublished(categoryName));
+        PageInfo<BlogInfoVo> pageInfo = new PageInfo<>(blogInfos);
+        PageResult<BlogInfoVo> pageResult = new PageResult<>(pageInfo.getPages(), pageInfo.getList());
+        setBlogViewsFromRedisToPageResult(pageResult);
+        return pageResult;
+    }
+
+    @Override
+    public PageResult<BlogInfoVo> getBlogInfoListByTagNameAndIsPublished(String tagName, Integer pageNum) {
+        PageHelper.startPage(pageNum, pageSize, orderBy);
+        List<BlogInfoVo> blogInfos = processBlogInfosPassword(blogMapper.getBlogInfoListByTagNameAndIsPublished(tagName));
+        PageInfo<BlogInfoVo> pageInfo = new PageInfo<>(blogInfos);
+        PageResult<BlogInfoVo> pageResult = new PageResult<>(pageInfo.getPages(), pageInfo.getList());
+        setBlogViewsFromRedisToPageResult(pageResult);
+        return pageResult;
+    }
+
+    @Override
+    public Map<String, Object> getArchiveBlogAndCountByIsPublished() {
+        String redisKey = RedisKeyConstants.ARCHIVE_BLOG_MAP;
+        Map<String, Object> mapFromRedis = redisService.getMapByValue(redisKey);
+        if(mapFromRedis != null) {
+            return mapFromRedis;
+        }
+        List<String> groupYearMonth = blogMapper.getGroupYearMonthByIsPublished();
+        Map<String, List<ArchiveBlogVo>> archiveBlogMap = new LinkedHashMap<>();
+        for(String s : groupYearMonth) {
+            List<ArchiveBlogVo> archiveBlogs = blogMapper.getArchiveBlogListByYearMonthAndIsPublished(s);
+            for(ArchiveBlogVo archiveBlog : archiveBlogs) {
+                if("".equals(archiveBlog.getPassword())) {
+                    archiveBlog.setPrivacy(true);
+                    archiveBlog.setPassword("");
+                } else {
+                    archiveBlog.setPrivacy(false);
+                }
+            }
+            archiveBlogMap.put(s, archiveBlogs);
+        }
+        Integer count = blogMapper.countBlogByIsPublished();
+        Map<String, Object> map = new HashMap<>(4);
+        map.put("blogMap", archiveBlogMap);
+        map.put("count", count);
+        redisService.saveMapToValue(redisKey, map);
+        return map;
     }
 
     @Override

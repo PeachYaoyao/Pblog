@@ -10,12 +10,16 @@ import top.peachyao.model.vo.PageResult;
 import top.peachyao.model.vo.SearchBlogVo;
 
 import java.util.List;
+import java.util.Map;
 
 
 public interface BlogService {
     List<Blog> getListByTitleAndCategoryId(String title, Integer categoryId);
     List<SearchBlogVo> getSearchBlogListByQueryAndIsPublished(String query);
     PageResult<BlogInfoVo> getBlogInfoListByIsPublished(Integer pageNum);
+    PageResult<BlogInfoVo> getBlogInfoListByCategoryNameAndIsPublished(String categoryName, Integer pageNum);
+    PageResult<BlogInfoVo> getBlogInfoListByTagNameAndIsPublished(String tagName, Integer pageNum);
+    Map<String, Object> getArchiveBlogAndCountByIsPublished();
     void deleteBlogById(Long id);
     void deleteBlogTagByBlogId(Long blogId);
     void saveBlog(BlogDto blogDto);

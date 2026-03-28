@@ -1,12 +1,14 @@
 package top.peachyao.model.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @Description: 博客可见性DTO
  * @Author: PeachYao
  * @Date: 2026-03-27
  */
+@NoArgsConstructor
 @Data
 public class BlogVisibilityDto {
     private Boolean appreciation;//赞赏开关

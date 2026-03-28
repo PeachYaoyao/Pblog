@@ -8,6 +8,7 @@ import top.peachyao.entity.Blog;
 import top.peachyao.model.dto.BlogDto;
 import top.peachyao.model.dto.BlogViewDto;
 import top.peachyao.model.dto.BlogVisibilityDto;
+import top.peachyao.model.vo.ArchiveBlogVo;
 import top.peachyao.model.vo.BlogDetailVo;
 import top.peachyao.model.vo.BlogInfoVo;
 import top.peachyao.model.vo.SearchBlogVo;
@@ -24,6 +25,10 @@ public interface BlogMapper {
     List<Blog> getListByTitleAndCategoryId(String title, Integer categoryId);
     List<SearchBlogVo> getSearchBlogListByQueryAndIsPublished(String query);
     List<BlogInfoVo> getBlogInfoListByIsPublished();
+    List<BlogInfoVo> getBlogInfoListByCategoryNameAndIsPublished(String categoryName);
+    List<BlogInfoVo> getBlogInfoListByTagNameAndIsPublished(String tagName);
+    List<String> getGroupYearMonthByIsPublished();
+    List<ArchiveBlogVo> getArchiveBlogListByYearMonthAndIsPublished(String yearMonth);
     List<BlogViewDto> getBlogViewsList();
     int deleteBlogById(Long id);
     int deleteBlogTagByBlogId(Long blogId);
@@ -36,4 +41,5 @@ public interface BlogMapper {
     BlogDetailVo getBlogByIdAndIsPublished(Long id);
     String getBlogPassword(Long blogId);
     int updateBlog(BlogDto blogDto);
+    int countBlogByIsPublished();
 }
