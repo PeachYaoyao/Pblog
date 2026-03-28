@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.peachyao.mapper.FriendMapper">
+    <resultMap id="friendVO" type="top.peachyao.model.vo.FriendVo">
+        <result property="nickname" column="nickname"/>
+        <result property="description" column="description"/>
+        <result property="website" column="website"/>
+        <result property="avatar" column="avatar"/>
+    </resultMap>
+
+    <!--查询友链VO List-->
+    <select id="getFriendVOList" resultMap="friendVO">
+        select nickname, description, website, avatar from friend where is_published=true order by rand()
+    </select>
+
+    <!--增加友链浏览次数-->
+    <update id="updateViewsByNickname">
+        update friend set views=views+1 where nickname=#{nickname}
+    </update>
+</mapper>
+

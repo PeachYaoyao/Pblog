@@ -3,6 +3,7 @@ package top.peachyao.service;
 import top.peachyao.model.vo.BlogInfoVo;
 import top.peachyao.model.vo.PageResult;
 
+import java.util.List;
 import java.util.Map;
 
 public interface RedisService {
@@ -12,8 +13,12 @@ public interface RedisService {
     Object getValueByHashKey(String hash, Object key);
     void incrementByHashKey(String hash, Object key, int increment);
     void deleteByHashKey(String hash, Object key);
+    <T> List<T> getListByValue(String key);
+    <T> void saveListToValue(String key, List<T> list);
     <T> Map<String, T> getMapByValue(String key);
     <T> void saveMapToValue(String key, Map<String, T> map);
+    <T> T getObjectByValue(String key, Class t);
+    void saveObjectToValue(String key, Object object);
     void deleteCacheByKey(String key);
     boolean hasKey(String key);
 }

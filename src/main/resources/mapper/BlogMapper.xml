@@ -250,5 +250,33 @@
         where t.tag_name=#{tagName} and b.is_published=true
     </select>
 
+    <resultMap id="newBlog" type="top.peachyao.model.vo.NewBlogVo">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="password" column="password"/>
+    </resultMap>
 
+    <!--查询最新公开博客-->
+    <select id="getNewBlogListByIsPublished" resultMap="newBlog">
+        select id, title, password
+        from blog
+        where is_published=true
+        order by create_time desc
+    </select>
+
+    <resultMap id="randomBlog" type="top.peachyao.model.vo.RandomBlogVo">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="password" column="password"/>
+        <result property="createTime" column="create_time"/>
+        <result property="firstPicture" column="first_picture"/>
+    </resultMap>
+
+    <!--查询随机的公开且推荐文章-->
+    <select id="getRandomBlogListByLimitNumAndIsPublishedAndIsRecommend" resultMap="randomBlog">
+        select id, title, password, create_time, first_picture
+        from blog
+        where is_published=true and is_recommend=true
+        order by rand() limit #{limitNum}
+    </select>
 </mapper>

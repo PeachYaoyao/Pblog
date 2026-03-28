@@ -128,6 +128,27 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    public List<NewBlogVo> getNewBlogListByIsPublished() {
+        String redisKey = RedisKeyConstants.NEW_BLOG_LIST;
+        List<NewBlogVo> newBlogListFromRedis = redisService.getListByValue(redisKey);
+        if (newBlogListFromRedis != null) {
+            return newBlogListFromRedis;
+        }
+        PageHelper.startPage(1, newBlogPageSize);
+        List<NewBlogVo> newBlogList = blogMapper.getNewBlogListByIsPublished();
+        for(NewBlogVo newBlog : newBlogList) {
+            if(!"".equals(newBlog.getPassword())) {
+                newBlog.setPrivacy(true);
+                newBlog.setPassword("");
+            } else {
+                newBlog.setPrivacy(false);
+            }
+        }
+        redisService.saveListToValue(redisKey, newBlogList);
+        return newBlogList;
+    }
+
+    @Override
     public PageResult<BlogInfoVo> getBlogInfoListByIsPublished(Integer pageNum) {
         String redisKey = RedisKeyConstants.HOME_BLOG_INFO_LIST;
         PageResult<BlogInfoVo> pageResultFromRedis = redisService.getBlogInfoPageResultByHash(redisKey, pageNum);
@@ -191,6 +212,20 @@ public class BlogServiceImpl implements BlogService {
         map.put("count", count);
         redisService.saveMapToValue(redisKey, map);
         return map;
+    }
+
+    @Override
+    public List<RandomBlogVo> getRandomBlogListByLimitNumAndIsPublishedAndIsRecommend() {
+        List<RandomBlogVo> randomBlogs = blogMapper.getRandomBlogListByLimitNumAndIsPublishedAndIsRecommend(randomBlogLimitNum);
+        for(RandomBlogVo randomBlog : randomBlogs) {
+            if(!"".equals(randomBlog.getPassword())) {
+                randomBlog.setPrivacy(true);
+                randomBlog.setPassword("");
+            } else {
+                randomBlog.setPrivacy(false);
+            }
+        }
+        return randomBlogs;
     }
 
     @Override

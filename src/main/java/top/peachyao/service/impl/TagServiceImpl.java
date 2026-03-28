@@ -32,6 +32,18 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    public List<Tag> getTagListNotId() {
+        String redisKey = RedisKeyConstants.TAG_CLOUD_LIST;
+        List<Tag> tagListFromRedis = redisService.getListByValue(redisKey);
+        if(tagListFromRedis != null) {
+            return tagListFromRedis;
+        }
+        List<Tag> tagList = tagMapper.getTagListNotId();
+        redisService.saveListToValue(redisKey, tagList);
+        return tagList;
+    }
+
+    @Override
     public List<Tag> getTagListByBlogId(Long blogId) {
         return tagMapper.getTagListByBlogId(blogId);
     }

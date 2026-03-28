@@ -13,6 +13,7 @@ import java.util.List;
 @Mapper
 public interface CategoryMapper {
     List<Category> getCategoryList();
+    List<Category> getCategoryNameList();
     int saveCategory(Category category);
     Category getCategoryById(Long id);
     Category getCategoryByName(String name);

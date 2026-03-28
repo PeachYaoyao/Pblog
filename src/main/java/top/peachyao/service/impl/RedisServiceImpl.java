@@ -8,6 +8,7 @@ import top.peachyao.model.vo.PageResult;
 import top.peachyao.service.RedisService;
 import top.peachyao.util.JacksonUtils;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -60,6 +61,17 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
+    public <T> List<T> getListByValue(String key) {
+        List<T> redisResult = (List<T>) redisTemplate.opsForValue().get(key);
+        return redisResult;
+    }
+
+    @Override
+    public <T> void saveListToValue(String key, List<T> list) {
+        redisTemplate.opsForValue().set(key, list);
+    }
+
+    @Override
     public <T> Map<String, T> getMapByValue(String key) {
         Map<String ,T> redisResult = (Map<String, T>) redisTemplate.opsForValue().get(key);
         return redisResult;
@@ -68,6 +80,18 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public <T> void saveMapToValue(String key, Map<String, T> map) {
         redisTemplate.opsForValue().set(key, map);
+    }
+
+    @Override
+    public <T> T getObjectByValue(String key, Class t) {
+        Object redisResult = redisTemplate.opsForValue().get(key);
+        T object = (T) JacksonUtils.convertValue(redisResult, t);
+        return object;
+    }
+
+    @Override
+    public void saveObjectToValue(String key, Object object) {
+        redisTemplate.opsForValue().set(key, object);
     }
 
     @Override
