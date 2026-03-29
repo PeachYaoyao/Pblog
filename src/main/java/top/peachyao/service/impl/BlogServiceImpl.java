@@ -356,6 +356,16 @@ public class BlogServiceImpl implements BlogService {
         redisService.saveKVToHash(RedisKeyConstants.BLOG_VIEWS_MAP, blogDto.getId(), blogDto.getViews());
     }
 
+    @Override
+    public Boolean getCommentEnabledByBlogId(Long blogId) {
+        return blogMapper.getCommentEnabledByBlogId(blogId);
+    }
+
+    @Override
+    public Boolean getPublishedByBlogId(Long blogId) {
+        return blogMapper.getPublishedByBlogId(blogId);
+    }
+
     /**
      * 执行博客添加或更新操作：校验参数是否合法，添加分类、标签，维护博客标签关联表
      *

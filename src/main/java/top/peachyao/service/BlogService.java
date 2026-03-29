@@ -30,5 +30,7 @@ public interface BlogService {
     BlogDetailVo getBlogByIdAndIsPublished(Long id, String jwt);
     String getBlogPassword(Long blogId);
     void updateBlog(BlogDto blogDto);
+    Boolean getCommentEnabledByBlogId(Long blogId);
+    Boolean getPublishedByBlogId(Long blogId);
     Result getResult(BlogDto blogDto, String type);
 }

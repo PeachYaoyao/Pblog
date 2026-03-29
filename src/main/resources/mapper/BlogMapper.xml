@@ -279,4 +279,14 @@
         where is_published=true and is_recommend=true
         order by rand() limit #{limitNum}
     </select>
+
+    <!--查询博客是否启用评论-->
+    <select id="getCommentEnabledByBlogId" resultType="java.lang.Boolean">
+        select is_comment_enabled from blog where id=#{blogId}
+    </select>
+
+    <!--查询博客是否公开-->
+    <select id="getPublishedByBlogId" resultType="java.lang.Boolean">
+        select is_published from blog where id=#{blogId}
+    </select>
 </mapper>

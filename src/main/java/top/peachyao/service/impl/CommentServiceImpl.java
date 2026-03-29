@@ -1,10 +1,24 @@
 package top.peachyao.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import org.checkerframework.checker.units.qual.N;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.peachyao.constant.JwtConstants;
+import top.peachyao.entity.User;
+import top.peachyao.enums.CommentOpenStateEnum;
+import top.peachyao.exception.NotFoundException;
 import top.peachyao.mapper.CommentMapper;
+import top.peachyao.model.vo.PageCommentVo;
+import top.peachyao.model.vo.PageResult;
 import top.peachyao.service.CommentService;
+import top.peachyao.service.UserService;
+import top.peachyao.util.JwtUtils;
+import top.peachyao.util.comment.CommentUtils;
+
+import java.util.*;
 
 /**
  * @Description: 博客评论业务层实现
@@ -15,10 +29,94 @@ import top.peachyao.service.CommentService;
 public class CommentServiceImpl implements CommentService {
     @Autowired
     CommentMapper commentMapper;
+    @Autowired
+    CommentUtils commentUtils;
+    @Autowired
+    UserServiceImpl userService;
+
+    @Override
+    public Map<String, Object> comments(Integer page, Long blogId, Integer pageNum, Integer pageSize, String jwt) {
+        CommentOpenStateEnum openState = commentUtils.judgeCommentState(page, blogId);
+        switch (openState) {
+            case NOT_FOUND:
+                throw new NotFoundException("该博客不存在");
+            case CLOSE:
+                throw new NotFoundException("评论已关闭");
+            case PASSWORD:
+                if(JwtUtils.judgeTokenIsExist(jwt)) {
+                    try {
+                        String subject = JwtUtils.getTokenBody(jwt).getSubject();
+                        if(subject.startsWith(JwtConstants.ADMIN_PREFIX)) {
+                            String username = subject.replace(JwtConstants.ADMIN_PREFIX, "");
+                            User admin = (User) userService.loadUserByUsername(username);
+                            if(admin == null) {
+                                throw new NotFoundException("博主身份Token已失效，请重新登录！");
+                            }
+                        } else {
+                            Long tokenBlogId = Long.parseLong(subject);
+                            if(!tokenBlogId.equals(blogId)) {
+                                throw new NotFoundException("Token不匹配，请重新验证密码！");
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        throw new NotFoundException("Token已失效，请重新验证密码！");
+                    }
+                } else {
+                    throw new NotFoundException("此文章受密码保护，请验证密码！");
+                }
+                break;
+            default:
+                break;
+        }
+        Integer allComment = countByPageAndIsPublished(page, blogId, null);
+        Integer openComment = countByPageAndIsPublished(page, blogId, true);
+        PageHelper.startPage(pageNum, pageSize);
+        PageInfo<PageCommentVo> pageInfo = new PageInfo<>(getPageCommentList(page, blogId, -1L));
+        PageResult<PageCommentVo> pageResult = new PageResult<>(pageInfo.getPages(), pageInfo.getList());
+        Map<String, Object> map = new HashMap<>(8);
+        map.put("allComment", allComment);
+        map.put("closeComment", allComment - openComment);
+        map.put("comments", pageResult);
+        return map;
+    }
+
+    @Override
+    public List<PageCommentVo> getPageCommentList(Integer page, Long blogId, Long parentCommentId) {
+        List<PageCommentVo> comments = getPageCommentListByPageAndParentCommentId(page, blogId, parentCommentId);
+        for (PageCommentVo comment : comments) {
+            List<PageCommentVo> tmpComments = new ArrayList<>();
+            getReplyComments(tmpComments, comment.getReplyComments());
+            Comparator<PageCommentVo> comparator = Comparator.comparing(PageCommentVo::getCreateTime);
+            tmpComments.sort(comparator);
+            comment.setReplyComments(tmpComments);
+        }
+        return comments;
+    }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteCommentsByBlogId(Long blogId) {
         commentMapper.deleteCommentsByBlogId(blogId);
+    }
+
+    @Override
+    public int countByPageAndIsPublished(Integer page, Long blogId, Boolean isPublished) {
+        return commentMapper.countByPageAndIsPublished(page, blogId, isPublished);
+    }
+
+    private List<PageCommentVo> getPageCommentListByPageAndParentCommentId(Integer page, Long blogId, Long parentCommentId) {
+        List<PageCommentVo> comments = commentMapper.getPageCommentListByPageAndParentCommentId(page, blogId, parentCommentId);
+        for(PageCommentVo comment : comments) {
+            List<PageCommentVo> replyComments = getPageCommentListByPageAndParentCommentId(page, blogId, comment.getId());
+            comment.setReplyComments(replyComments);
+        }
+        return comments;
+    }
+    private void getReplyComments(List<PageCommentVo> tmpComments, List<PageCommentVo> comments) {
+        for(PageCommentVo comment : comments) {
+            tmpComments.add(comment);
+            getReplyComments(tmpComments, comment.getReplyComments());
+        }
     }
 }

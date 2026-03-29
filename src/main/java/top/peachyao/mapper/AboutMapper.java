@@ -14,4 +14,5 @@ import java.util.List;
 public interface AboutMapper {
     List<About> getAbout();
     int updateAbout(String nameEn, String value);
+    String getAboutCommentEnabled();
 }

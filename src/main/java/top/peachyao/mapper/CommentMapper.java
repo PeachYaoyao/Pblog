@@ -1,6 +1,9 @@
 package top.peachyao.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
+import top.peachyao.model.vo.PageCommentVo;
+
+import java.util.List;
 
 
 /**
@@ -10,5 +13,7 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface CommentMapper {
+    List<PageCommentVo> getPageCommentListByPageAndParentCommentId(Integer page, Long blogId, Long parentCommentId);
     int deleteCommentsByBlogId(Long blogId);
+    int countByPageAndIsPublished(Integer page, Long blogId, Boolean isPublished);
 }
