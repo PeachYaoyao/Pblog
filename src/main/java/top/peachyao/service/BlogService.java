@@ -27,6 +27,7 @@ public interface BlogService {
     void updateBlogVisibilityById(Long blogId, BlogVisibilityDto blogVisibility);
     void updateBlogTopById(Long blogId, Boolean top);
     Blog getBlogById(Long id);
+    String getTitleByBlogId(Long id);
     BlogDetailVo getBlogByIdAndIsPublished(Long id, String jwt);
     String getBlogPassword(Long blogId);
     void updateBlog(BlogDto blogDto);

@@ -1,11 +1,10 @@
 package top.peachyao.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import top.peachyao.handler.Result;
+import top.peachyao.model.dto.CommentDto;
 import top.peachyao.service.CommentService;
 
 import java.util.Map;
@@ -49,5 +48,11 @@ public class CommentController {
      * @param jwt     博主身份Token
      * @return
      */
-
+    @PostMapping("/comment")
+public Result postComment(@RequestBody CommentDto comment,
+                          HttpServletRequest request,
+                          @RequestHeader(value = "Authorization", defaultValue = "") String jwt) {
+        commentService.postComment(comment, request, jwt);
+        return Result.ok("评论成功");
+    }
 }

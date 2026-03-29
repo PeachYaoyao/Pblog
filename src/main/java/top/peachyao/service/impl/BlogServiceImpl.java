@@ -303,6 +303,11 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    public String getTitleByBlogId(Long id) {
+        return blogMapper.getTitleByBlogId(id);
+    }
+
+    @Override
     public BlogDetailVo getBlogByIdAndIsPublished(Long id, String jwt) {
         BlogDetailVo blogDetailVo = blogMapper.getBlogByIdAndIsPublished(id);
         if(blogDetailVo == null) {

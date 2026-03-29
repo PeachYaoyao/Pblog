@@ -37,6 +37,7 @@ public interface BlogMapper {
     int updateBlogRecommendById(Long blogId, Boolean recommend);
     int updateBlogTopById(Long blogId, Boolean top);
     Blog getBlogById(Long id);
+    String getTitleByBlogId(Long id);
     BlogDetailVo getBlogByIdAndIsPublished(Long id);
     String getBlogPassword(Long blogId);
     int updateBlog(BlogDto blogDto);
