@@ -5,10 +5,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import top.peachyao.entity.User;
+import top.peachyao.exception.NotFoundException;
 import top.peachyao.mapper.UserMapper;
 import top.peachyao.service.UserService;
 import top.peachyao.util.HashUtils;
+import top.peachyao.util.JwtUtils;
 
 /**
  * @Description: 用户业务层接口实现类
@@ -39,5 +42,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throw new UsernameNotFoundException("密码错误");
         }
         return user;
+    }
+
+    @Override
+    public boolean changeAccount(User user, String jwt) {
+        String username = JwtUtils.getTokenBody(jwt).getSubject();
+        user.setPassword(HashUtils.getBC(user.getPassword()));
+        if(userMapper.updateUserByUsername(username, user) != 1) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
+        return true;
     }
 }

@@ -13,6 +13,7 @@ import java.util.Map;
 public interface BlogService {
     List<Blog> getListByTitleAndCategoryId(String title, Integer categoryId);
     List<SearchBlogVo> getSearchBlogListByQueryAndIsPublished(String query);
+    List<Blog> getIdAndTitleList();
     List<NewBlogVo> getNewBlogListByIsPublished();
     PageResult<BlogInfoVo> getBlogInfoListByIsPublished(Integer pageNum);
     PageResult<BlogInfoVo> getBlogInfoListByCategoryNameAndIsPublished(String categoryName, Integer pageNum);
@@ -31,6 +32,7 @@ public interface BlogService {
     BlogDetailVo getBlogByIdAndIsPublished(Long id, String jwt);
     String getBlogPassword(Long blogId);
     void updateBlog(BlogDto blogDto);
+    int countBlogByCategoryId(Long categoryId);
     Boolean getCommentEnabledByBlogId(Long blogId);
     Boolean getPublishedByBlogId(Long blogId);
     Result getResult(BlogDto blogDto, String type);

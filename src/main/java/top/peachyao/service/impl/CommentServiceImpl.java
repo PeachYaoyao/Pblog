@@ -3,6 +3,7 @@ package top.peachyao.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import jakarta.servlet.http.HttpServletRequest;
+import org.checkerframework.checker.units.qual.C;
 import org.checkerframework.checker.units.qual.N;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -179,6 +180,16 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public List<Comment> getListByPageAndParentCommentId(Integer page, Long blogId, Long parentCommentId) {
+        List<Comment> comments = commentMapper.getListByPageAndParentCommentId(page, blogId, parentCommentId);
+        for(Comment comment : comments) {
+            List<Comment> replyComments = getListByPageAndParentCommentId(page, blogId, comment.getId());
+            comment.setReplyComments(replyComments);
+        }
+        return comments;
+    }
+
+    @Override
     public List<PageCommentVo> getPageCommentList(Integer page, Long blogId, Long parentCommentId) {
         List<PageCommentVo> comments = getPageCommentListByPageAndParentCommentId(page, blogId, parentCommentId);
         for (PageCommentVo comment : comments) {
@@ -202,8 +213,50 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
+    public void updateCommentPublishedById(Long commentId, Boolean published) {
+        if(!published) {
+            List<Comment> comments = getAllReplyComments(commentId);
+            for(Comment comment : comments) {
+                hideComment(comment);
+            }
+        }
+        if(commentMapper.updateCommentPublishedById(commentId, published) != 1) {
+            throw new PersistenceException("操作失败");
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateCommentNoticeById(Long commentId, Boolean notice) {
+        if(commentMapper.updateCommentNoticeById(commentId, notice) != 1) {
+            throw new PersistenceException("操作成功");
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void deleteCommentById(Long commentId) {
+        List<Comment> comments = getAllReplyComments(commentId);
+        for(Comment comment : comments) {
+            delete(comment);
+        }
+        if(commentMapper.deleteCommentById(commentId) != 1) {
+            throw new PersistenceException("评论删除失败");
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
     public void deleteCommentsByBlogId(Long blogId) {
         commentMapper.deleteCommentsByBlogId(blogId);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateComment(Comment comment) {
+        if(commentMapper.updateComment(comment) != 1) {
+            throw new PersistenceException("评论修改失败");
+        }
     }
 
     @Override
@@ -232,5 +285,48 @@ public class CommentServiceImpl implements CommentService {
             tmpComments.add(comment);
             getReplyComments(tmpComments, comment.getReplyComments());
         }
+    }
+
+    /**
+     * 递归删除子评论
+     *
+     * @param comment 需要删除子评论的父评论
+     */
+    private void delete(Comment comment) {
+        for(Comment c : comment.getReplyComments()) {
+            delete(c);
+        }
+        if(commentMapper.deleteCommentById(comment.getId()) != 1) {
+            throw new PersistenceException("评论删除失败");
+        }
+    }
+
+    /**
+     * 递归隐藏子评论
+     *
+     * @param comment 需要隐藏子评论的父评论
+     */
+    private void hideComment(Comment comment) {
+        for(Comment c : comment.getReplyComments()) {
+            hideComment(c);
+        }
+        if(commentMapper.updateCommentPublishedById(comment.getId(), false) != 1) {
+            throw new PersistenceException("操作失败");
+        }
+    }
+
+    /**
+     * 按id递归查询子评论
+     *
+     * @param parentCommentId 需要查询子评论的父评论id
+     * @return
+     */
+    private List<Comment> getAllReplyComments(Long parentCommentId) {
+        List<Comment> comments = commentMapper.getListByParentCommentId(parentCommentId);
+        for(Comment comment : comments) {
+            List<Comment> replyComments = getAllReplyComments(comment.getId());
+            comment.setReplyComments(replyComments);
+        }
+        return comments;
     }
 }

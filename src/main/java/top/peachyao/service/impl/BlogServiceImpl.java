@@ -128,6 +128,11 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    public List<Blog> getIdAndTitleList() {
+        return blogMapper.getIdAndTitleList();
+    }
+
+    @Override
     public List<NewBlogVo> getNewBlogListByIsPublished() {
         String redisKey = RedisKeyConstants.NEW_BLOG_LIST;
         List<NewBlogVo> newBlogListFromRedis = redisService.getListByValue(redisKey);
@@ -359,6 +364,11 @@ public class BlogServiceImpl implements BlogService {
         }
         deleteBlogRedisCache();
         redisService.saveKVToHash(RedisKeyConstants.BLOG_VIEWS_MAP, blogDto.getId(), blogDto.getViews());
+    }
+
+    @Override
+    public int countBlogByCategoryId(Long categoryId) {
+        return blogMapper.countBlogByCategoryId(categoryId);
     }
 
     @Override

@@ -21,6 +21,7 @@ import java.util.List;
 public interface BlogMapper {
     List<Blog> getListByTitleAndCategoryId(String title, Integer categoryId);
     List<SearchBlogVo> getSearchBlogListByQueryAndIsPublished(String query);
+    List<Blog> getIdAndTitleList();
     List<NewBlogVo> getNewBlogListByIsPublished();
     List<BlogInfoVo> getBlogInfoListByIsPublished();
     List<BlogInfoVo> getBlogInfoListByCategoryNameAndIsPublished(String categoryName);
@@ -42,6 +43,7 @@ public interface BlogMapper {
     String getBlogPassword(Long blogId);
     int updateBlog(BlogDto blogDto);
     int countBlogByIsPublished();
+    int countBlogByCategoryId(Long categoryId);
     Boolean getCommentEnabledByBlogId(Long blogId);
     Boolean getPublishedByBlogId(Long blogId);
 }

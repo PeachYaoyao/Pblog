@@ -15,9 +15,15 @@ import java.util.List;
  */
 @Mapper
 public interface CommentMapper {
+    List<Comment> getListByPageAndParentCommentId(Integer page, Long blogId, Long parentCommentId);
+    List<Comment> getListByParentCommentId(Long parentCommentId);
     List<PageCommentVo> getPageCommentListByPageAndParentCommentId(Integer page, Long blogId, Long parentCommentId);
     Comment getCommentById(Long id);
+    int updateCommentPublishedById(Long commentId, Boolean published);
+    int updateCommentNoticeById(Long commentId, Boolean notice);
+    int deleteCommentById(Long commentId);
     int deleteCommentsByBlogId(Long blogId);
+    int updateComment(Comment comment);
     int countByPageAndIsPublished(Integer page, Long blogId, Boolean isPublished);
     int saveComment(CommentDto comment);
 }

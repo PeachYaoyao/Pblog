@@ -5,4 +5,9 @@
     <select id="findByUsername" resultType="top.peachyao.entity.User">
         select * from user where username=#{username} limit 1
     </select>
+
+    <!--按username修改-->
+    <update id="updateUserByUsername">
+        update user set username=#{user.username}, password=#{user.password}, update_time=now() where username=#{username}
+    </update>
 </mapper>

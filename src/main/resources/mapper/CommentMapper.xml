@@ -80,4 +80,49 @@
         values (#{nickname}, #{email}, #{content}, #{avatar}, #{createTime}, #{website}, #{ip}, #{published}, #{adminComment},
         #{page}, #{notice}, #{parentCommentId}, #{blogId}, #{qq})
     </insert>
+
+    <!--按页面和父评论id查询评论List-->
+    <select id="getListByPageAndParentCommentId" resultMap="comment">
+        select c.id, c.nickname, c.email, c.content, c.avatar, c.create_time, c.ip, c.is_published, c.is_admin_comment, c.page,
+        c.is_notice, c.parent_comment_id, c.website, c.blog_id, c.qq, b.title
+        from comment as c left join blog as b on c.blog_id=b.id
+        <where>
+            <if test="page!=null">
+                c.page=#{page}
+            </if>
+            <if test="page==0 and blogId!=null">
+                and c.blog_id=#{blogId}
+            </if>
+            and c.parent_comment_id=#{parentCommentId}
+        </where>
+    </select>
+
+    <!--按父评论id查询评论List-->
+    <select id="getListByParentCommentId" resultMap="comment">
+        select c.id, c.nickname, c.email, c.content, c.avatar, c.create_time, c.ip, c.is_published, c.is_admin_comment, c.page,
+        c.is_notice, c.parent_comment_id, c.website, c.qq, c.blog_id, b.title
+        from comment as c left join blog as b on c.blog_id=b.id
+        where c.parent_comment_id=#{parentCommentId}
+    </select>
+
+    <!--更新评论公开状态-->
+    <update id="updateCommentPublishedById">
+        update comment set is_published=#{published} where id=#{commentId}
+    </update>
+
+    <!--更新评论接收邮件提醒状态-->
+    <update id="updateCommentNoticeById">
+        update comment set is_notice=#{notice} where id=#{commentId}
+    </update>
+
+    <!--按id删除评论-->
+    <delete id="deleteCommentById">
+        delete from comment where id=#{commentId}
+    </delete>
+
+    <!--更新评论-->
+    <update id="updateComment">
+        update comment set nickname=#{nickname}, avatar=#{avatar}, email=#{email}, ip=#{ip}, content=#{content}, website=#{website}
+        where id=#{id}
+    </update>
 </mapper>

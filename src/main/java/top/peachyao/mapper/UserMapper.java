@@ -11,4 +11,5 @@ import top.peachyao.entity.User;
 @Mapper
 public interface UserMapper {
     User findByUsername(String username);
+    int updateUserByUsername(String username, User user);
 }

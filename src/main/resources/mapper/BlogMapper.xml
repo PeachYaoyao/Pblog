@@ -294,4 +294,19 @@
     <select id="getTitleByBlogId" resultType="java.lang.String">
         select title from blog where id=#{id}
     </select>
+
+    <!--按分类id查询博客数量-->
+    <select id="countBlogByCategoryId" resultType="java.lang.Integer">
+        select count(*) from blog where category_id=#{categoryId}
+    </select>
+
+    <resultMap id="blogIdAndTitle" type="top.peachyao.model.vo.BlogIdAndTitleVo">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+    </resultMap>
+
+    <!--查询所有博客id和title-->
+    <select id="getIdAndTitleList" resultMap="blogIdAndTitle">
+        select id, title from blog order by create_time desc
+    </select>
 </mapper>

@@ -30,4 +30,14 @@
     <select id="getCategoryNameList" resultMap="category">
         select category_name from category order by id desc
     </select>
+
+    <!--更新分类-->
+    <update id="updateCategory">
+        update category set category_name=#{name} where id=#{id}
+    </update>
+
+    <!--按id删除分类-->
+    <delete id="deleteCategoryById">
+        delete from category where id=#{id}
+    </delete>
 </mapper>
