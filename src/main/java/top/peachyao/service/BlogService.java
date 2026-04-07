@@ -33,6 +33,7 @@ public interface BlogService {
     String getBlogPassword(Long blogId);
     void updateBlog(BlogDto blogDto);
     int countBlogByCategoryId(Long categoryId);
+    int countBlogByTagId(Long tagId);
     Boolean getCommentEnabledByBlogId(Long blogId);
     Boolean getPublishedByBlogId(Long blogId);
     Result getResult(BlogDto blogDto, String type);

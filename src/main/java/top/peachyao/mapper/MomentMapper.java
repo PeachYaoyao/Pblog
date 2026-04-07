@@ -9,4 +9,9 @@ import java.util.List;
 public interface MomentMapper {
     List<Moment> getMomentList();
     int addLikeByMomentId(Long momentId);
+    int updateMomentPublishedById(Long momentId, Boolean published);
+    Moment getMomentById(Long id);
+    int deleteMomentById(Long id);
+    int saveMoment(Moment moment);
+    int updateMoment(Moment moment);
 }

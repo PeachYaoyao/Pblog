@@ -309,4 +309,9 @@
     <select id="getIdAndTitleList" resultMap="blogIdAndTitle">
         select id, title from blog order by create_time desc
     </select>
+
+    <!--按标签id查询博客数量-->
+    <select id="countBlogByTagId" resultType="java.lang.Integer">
+        select count(*) from blog_tag where tag_id=#{tagId}
+    </select>
 </mapper>

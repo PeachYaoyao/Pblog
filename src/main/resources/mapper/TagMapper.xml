@@ -38,5 +38,14 @@
     <select id="getTagListNotId" resultMap="tag">
         select tag_name, color from tag order by id desc
     </select>
+
+    <!--更新标签-->
+    <update id="updateTag">
+        update tag set tag_name=#{name}, color=#{color} where id=#{id}
+    </update>
+
+    <delete id="deleteTagById">
+        delete from tag where id=#{id}
+    </delete>
 </mapper>
 
