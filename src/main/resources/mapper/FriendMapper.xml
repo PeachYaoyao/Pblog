@@ -17,5 +17,43 @@
     <update id="updateViewsByNickname">
         update friend set views=views+1 where nickname=#{nickname}
     </update>
+
+    <resultMap id="friend" type="top.peachyao.entity.Friend">
+        <id property="id" column="id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="description" column="description"/>
+        <result property="website" column="website"/>
+        <result property="avatar" column="avatar"/>
+        <result property="published" column="is_published"/>
+        <result property="views" column="views"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <!--查询友链List-->
+    <select id="getFriendList" resultMap="friend">
+        select id, nickname, description, website, avatar, is_published, views, create_time from friend
+    </select>
+
+    <!--更新友链公开状态-->
+    <update id="updateFriendPublishedById">
+        update friend set is_published=#{published} where id=#{id}
+    </update>
+
+    <!--添加友链-->
+    <insert id="saveFriend" parameterType="top.peachyao.entity.Friend" useGeneratedKeys="true" keyProperty="id">
+        insert into friend (nickname, description, website, avatar, is_published, views, create_time)
+        values (#{nickname}, #{description}, #{website}, #{avatar}, #{published}, #{views}, #{createTime})
+    </insert>
+
+    <!--更新友链-->
+    <update id="updateFriend">
+        update friend set nickname=#{nickname}, description=#{description}, website=#{website}, avatar=#{avatar}, is_published=#{published}
+        where id=#{id}
+    </update>
+
+    <!--按id删除友链-->
+    <delete id="deleteFriend">
+        delete from friend where id=#{id}
+    </delete>
 </mapper>
 
