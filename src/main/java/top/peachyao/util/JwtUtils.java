@@ -13,10 +13,7 @@ import java.util.Collection;
 import java.util.Date;
 
 /**
- * <p>
- * JWT工具类
- * </p>
- *
+ * @Description: JWT工具类
  * @author Peachyao
  * @since 2026-03-24
  */

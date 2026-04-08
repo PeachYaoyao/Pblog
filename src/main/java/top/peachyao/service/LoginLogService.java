@@ -9,6 +9,6 @@ import java.util.List;
 public interface LoginLogService {
     List<LoginLog> getLoginLogListByDate(String startDate, String endDate);
     @Async
-    void saveLoginLog(ExceptionLog log);
+    void saveLoginLog(LoginLog log);
     void deleteLoginLogById(Long id);
 }

@@ -32,7 +32,7 @@ public class LoginLogServiceImpl implements LoginLogService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void saveLoginLog(ExceptionLog log) {
+    public void saveLoginLog(LoginLog log) {
         String ipSource = IpAddressUtils.getCityInfo(log.getIp());
         UserAgentDTO userAgentDTO = userAgentUtils.parseOsAndBrowser(log.getUserAgent());
         log.setIpSource(ipSource);

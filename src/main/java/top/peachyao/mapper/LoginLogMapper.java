@@ -14,6 +14,6 @@ import java.util.List;
 @Mapper
 public interface LoginLogMapper {
     List<LoginLog> getLoginLogListByDate(String startDate, String endDate);
-    int saveLoginLog(ExceptionLog log);
+    int saveLoginLog(LoginLog log);
     int deleteLoginLogById(Long id);
 }
