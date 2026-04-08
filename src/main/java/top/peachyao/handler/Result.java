@@ -2,12 +2,14 @@ package top.peachyao.handler;
 
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @Description: 封装响应结果
  * @Author: PeachYao
  * @Date: 2026-03-26
  */
+@NoArgsConstructor
 @Data
 public class Result {
     private Integer code;

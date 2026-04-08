@@ -95,6 +95,16 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
+    public void saveValueToSet(String key, Object value) {
+        redisTemplate.opsForSet().add(key, value);
+    }
+
+    @Override
+    public boolean hasValueInSet(String key, Object value) {
+        return redisTemplate.opsForSet().isMember(key, value);
+    }
+
+    @Override
     public void deleteCacheByKey(String key) {
         redisTemplate.delete(key);
     }

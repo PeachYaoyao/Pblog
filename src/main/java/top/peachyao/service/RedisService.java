@@ -19,6 +19,8 @@ public interface RedisService {
     <T> void saveMapToValue(String key, Map<String, T> map);
     <T> T getObjectByValue(String key, Class t);
     void saveObjectToValue(String key, Object object);
+    void saveValueToSet(String key, Object value);
+    boolean hasValueInSet(String key, Object value);
     void deleteCacheByKey(String key);
     boolean hasKey(String key);
 }

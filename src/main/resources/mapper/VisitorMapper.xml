@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="top.peachyao.mapper.VisitorMapper">
+    <!--添加访客-->
+    <insert id="saveVisitor" parameterType="top.peachyao.entity.Visitor" useGeneratedKeys="true" keyProperty="id">
+        insert into visitor (uuid, ip, ip_source, os, browser, create_time, last_time, pv, user_agent)
+        values (#{uuid}, #{ip}, #{ipSource}, #{os}, #{browser}, #{createTime}, #{lastTime}, #{pv}, #{userAgent})
+    </insert>
+
+    <!--查询是否存在某个uuid-->
+    <select id="hasUUID" resultType="java.lang.Integer">
+        select ifnull((select 1 from visitor where uuid=#{uuid} limit 1), 0)
+    </select>
+</mapper>
