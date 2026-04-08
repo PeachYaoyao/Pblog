@@ -10,6 +10,7 @@ import top.peachyao.util.JacksonUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Description: 读写Redis相关操作
@@ -90,6 +91,14 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
+    public void incrementByKey(String key, int increment) {
+        if(increment < 0) {
+            throw new RuntimeException("递增因子必须大于0");
+        }
+        redisTemplate.opsForValue().increment(key, increment);
+    }
+
+    @Override
     public void saveObjectToValue(String key, Object object) {
         redisTemplate.opsForValue().set(key, object);
     }
@@ -112,5 +121,10 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public boolean hasKey(String key) {
         return redisTemplate.hasKey(key);
+    }
+
+    @Override
+    public void expire(String key, long time) {
+        redisTemplate.expire(key, time, TimeUnit.SECONDS);
     }
 }
